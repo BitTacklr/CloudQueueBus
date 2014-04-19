@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{864440C6-26A5-45E7-AFE3-97D53751AEC8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CloudQueueBus</RootNamespace>
+    <AssemblyName>CloudQueueBus</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.1\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.1\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.1\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=3.1.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WindowsAzure.Storage.3.1.0.1\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Spatial, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\System.Spatial.5.6.1\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CloudQueueReceiveContextObserver.cs" />
+    <Compile Include="CloudQueueSendOnlyBus.cs" />
+    <Compile Include="CloudQueueServerBus.cs" />
+    <Compile Include="Configuration\CloudQueuePublishConfiguration.cs" />
+    <Compile Include="Configuration\CloudQueuePublishConfigurationBuilder.cs" />
+    <Compile Include="Configuration\CloudQueueReceiveConfiguration.cs" />
+    <Compile Include="Configuration\CloudQueueReceiverConfigurationBuilder.cs" />
+    <Compile Include="Configuration\CloudQueueSendOnlyBusConfiguration.cs" />
+    <Compile Include="Configuration\CloudQueueSendOnlyBusConfigurationBuilder.cs" />
+    <Compile Include="Configuration\CloudQueueServerBusConfiguration.cs" />
+    <Compile Include="Configuration\CloudQueueServerBusConfigurationBuilder.cs" />
+    <Compile Include="Configuration\ICloudQueuePublishConfiguration.cs" />
+    <Compile Include="Configuration\ICloudQueuePublishConfigurationBuilder.cs" />
+    <Compile Include="Configuration\ICloudQueueReceiverConfigurationBuilder.cs" />
+    <Compile Include="Configuration\ICloudQueueSendOnlyBusConfiguration.cs" />
+    <Compile Include="Configuration\ICloudQueueSendOnlyBusConfigurationBuilder.cs" />
+    <Compile Include="Configuration\ICloudQueueServerBusConfiguration.cs" />
+    <Compile Include="Configuration\ICloudQueueServerBusConfigurationBuilder.cs" />
+    <Compile Include="Configuration\IRouteConfigurationBuilder.cs" />
+    <Compile Include="Configuration\IRouteSource.cs" />
+    <Compile Include="Configuration\JsonFileBasedRouteSource.cs" />
+    <Compile Include="Configuration\RouteConfigurationBuilder.cs" />
+    <Compile Include="ICloudQueueSendOnlyBus.cs" />
+    <Compile Include="ICloudQueueServerBus.cs" />
+    <Compile Include="IMessageContentTypeResolver.cs" />
+    <Compile Include="IMessageTypeResolver.cs" />
+    <Compile Include="IReceiveContextSender.cs" />
+    <Compile Include="MessageContentTypeResolver.cs" />
+    <Compile Include="MessageTypeResolver.cs" />
+    <Compile Include="QueueRequestOptionsExtensions.cs" />
+    <Compile Include="CloudQueueBusFactory.cs" />
+    <Compile Include="Configuration\CloudQueueSenderConfiguration.cs" />
+    <Compile Include="Configuration\CloudQueueSenderConfigurationBuilder.cs" />
+    <Compile Include="CloudQueueMessageEnvelope.cs" />
+    <Compile Include="CloudQueueMessageEnvelopeJsonReader.cs" />
+    <Compile Include="CloudQueueMessageEnvelopeJsonWriter.cs" />
+    <Compile Include="CloudQueueMessageEnvelopeObserver.cs" />
+    <Compile Include="CloudQueueMessageEnvelopeSender.cs" />
+    <Compile Include="CloudQueueMessageObserver.cs" />
+    <Compile Include="CloudQueuePool.cs" />
+    <Compile Include="CloudQueuePublisherBus.cs" />
+    <Compile Include="Configuration\CloudQueuePublisherConfiguration.cs" />
+    <Compile Include="Configuration\CloudQueuePublisherBusConfigurationBuilder.cs" />
+    <Compile Include="CloudQueueReceiver.cs" />
+    <Compile Include="Configuration\CloudQueueReceiverConfiguration.cs" />
+    <Compile Include="CloudQueueSender.cs" />
+    <Compile Include="CloudQueueUri.cs" />
+    <Compile Include="Configuration\ICloudQueueSenderConfiguration.cs" />
+    <Compile Include="Configuration\ICloudQueueSenderConfigurationBuilder.cs" />
+    <Compile Include="ICloudQueueMessageEnvelope.cs" />
+    <Compile Include="ICloudQueueMessageEnvelopeJsonReader.cs" />
+    <Compile Include="ICloudQueueMessageEnvelopeJsonWriter.cs" />
+    <Compile Include="ICloudQueueMessageEnvelopeSender.cs" />
+    <Compile Include="ICloudQueuePool.cs" />
+    <Compile Include="ICloudQueuePublisherBus.cs" />
+    <Compile Include="Configuration\ICloudQueuePublisherConfiguration.cs" />
+    <Compile Include="Configuration\ICloudQueuePublisherBusConfigurationBuilder.cs" />
+    <Compile Include="ICloudQueueReceiver.cs" />
+    <Compile Include="Configuration\ICloudQueueReceiverConfiguration.cs" />
+    <Compile Include="ICloudQueueSender.cs" />
+    <Compile Include="IConfigureCloudQueueMessageEnvelope.cs" />
+    <Compile Include="IConfigureReceiveContext.cs" />
+    <Compile Include="IConfigureSendContext.cs" />
+    <Compile Include="IReceiveContext.cs" />
+    <Compile Include="ISendContext.cs" />
+    <Compile Include="ISendContextSender.cs" />
+    <Compile Include="ISenderConfiguration.cs" />
+    <Compile Include="Configuration\ISubscriptionConfigurationBuilder.cs" />
+    <Compile Include="Configuration\ISubscriptionSource.cs" />
+    <Compile Include="Configuration\JsonFileBasedSubscriptionSource.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReceiveContext.cs" />
+    <Compile Include="ReceiveContextSender.cs" />
+    <Compile Include="Configuration\Route.cs" />
+    <Compile Include="SendContext.cs" />
+    <Compile Include="SendContextSender.cs" />
+    <Compile Include="SerialGuid.cs" />
+    <Compile Include="Configuration\Subscription.cs" />
+    <Compile Include="Configuration\SubscriptionConfigurationBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
