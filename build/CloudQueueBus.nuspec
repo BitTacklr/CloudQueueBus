@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>CloudQueueBus</id>
+    <version>0.0.0</version>
+    <authors>Yves Reynhout</authors>
+    <owners>BitTacklr, Yves Reynhout</owners>
+    <title>CloudQueueBus</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://raw.github.com/yreynhout/CloudQueueBus/master/LICENSE.txt</licenseUrl>
+    <description>CloudQueueBus provides lightweight infrastructure for sending and receiving messages with Azure Storage Queues.</description>
+    <projectUrl>https://github.com/yreynhout/CloudQueueBus</projectUrl>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2014, BitTacklr. All rights reserved.</copyright>
+    <tags>eventsourcing DDDesign</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="WindowsAzure.Storage" version="4.3.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="output\csharp\CloudQueueBus.dll" target="lib\net45\CloudQueueBus.dll" />
+    <file src="output\csharp\CloudQueueBus.pdb" target="lib\net45\CloudQueueBus.pdb" />
+    <!-- <file src="output\csharp\CloudQueueBus.xml" target="lib\net45\CloudQueueBus.xml" /> -->
+    <file src="..\src\CloudQueueBus\*.cs" target="src\CloudQueueBus" />
+    <file src="..\src\CloudQueueBus\Configuration\*.cs" target="src\CloudQueueBus\Configuration" />
+    <file src="..\src\CloudQueueBus\Properties\*.cs" target="src\CloudQueueBus\Properties" />
+  </files>
+</package>
