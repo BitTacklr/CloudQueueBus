@@ -12,17 +12,18 @@ namespace CloudQueueBus.Configuration
         private JsonSerializer _serializer;
         private CloudStorageAccount _storageAccount;
         private readonly HashSet<Route> _routes;
+        private string _overflowBlobContainerName;
 
         public CloudQueueSendOnlyBusConfigurationBuilder()
         {
             _routes = new HashSet<Route>();
         }
 
-        public ICloudQueueSendOnlyBusConfigurationBuilder SendFrom(Uri address, Action<ICloudQueueSenderConfigurationBuilder> configure)
+        public ICloudQueueSendOnlyBusConfigurationBuilder SendFrom(string queueName, Action<ICloudQueueSenderConfigurationBuilder> configure)
         {
-            if (address == null) throw new ArgumentNullException("address");
+            if (queueName == null) throw new ArgumentNullException("address");
             if (configure == null) throw new ArgumentNullException("configure");
-            var builder = new CloudQueueSenderConfigurationBuilder(address);
+            var builder = new CloudQueueSenderConfigurationBuilder(queueName);
             configure(builder);
             _senderConfiguration = builder.Build();
             return this;
@@ -42,11 +43,18 @@ namespace CloudQueueBus.Configuration
             return this;
         }
 
-        public ICloudQueueSendOnlyBusConfigurationBuilder RouteTo(Uri address, Action<IRouteConfigurationBuilder> configure)
+        public ICloudQueueSendOnlyBusConfigurationBuilder UsingOverflowBlobContainer(string containerName)
         {
-            if (address == null) throw new ArgumentNullException("address");
+            if (containerName == null) throw new ArgumentNullException("containerName");
+            _overflowBlobContainerName = containerName;
+            return this;
+        }
+
+        public ICloudQueueSendOnlyBusConfigurationBuilder RouteTo(string queueName, Action<IRouteConfigurationBuilder> configure)
+        {
+            if (queueName == null) throw new ArgumentNullException("address");
             if (configure == null) throw new ArgumentNullException("configure");
-            var builder = new RouteConfigurationBuilder(address);
+            var builder = new RouteConfigurationBuilder(queueName);
             configure(builder);
             foreach (var route in builder.Build())
             {
@@ -72,7 +80,8 @@ namespace CloudQueueBus.Configuration
                 _storageAccount,
                 _serializer,
                 _senderConfiguration,
-                _routes.ToArray());
+                _routes.ToArray(), 
+                _overflowBlobContainerName);
         }
     }
 }

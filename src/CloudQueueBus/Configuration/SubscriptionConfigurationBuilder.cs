@@ -6,13 +6,13 @@ namespace CloudQueueBus.Configuration
 {
     public class SubscriptionConfigurationBuilder : ISubscriptionConfigurationBuilder
     {
-        private readonly Uri _address;
+        private readonly string _queueName;
         private readonly HashSet<Type> _messages;
 
-        public SubscriptionConfigurationBuilder(Uri address)
+        public SubscriptionConfigurationBuilder(string queueName)
         {
-            if (address == null) throw new ArgumentNullException("address");
-            _address = address;
+            if (queueName == null) throw new ArgumentNullException("queueName");
+            _queueName = queueName;
             _messages = new HashSet<Type>();
         }
 
@@ -41,7 +41,7 @@ namespace CloudQueueBus.Configuration
 
         public Subscription[] Build()
         {
-            return _messages.Select(_ => new Subscription(_, _address)).ToArray();
+            return _messages.Select(_ => new Subscription(_, _queueName)).ToArray();
         }
     }
 }

@@ -13,8 +13,11 @@ namespace CloudQueueBus.Configuration
 
         ICloudQueueReceiverConfiguration ReceiverConfiguration { get; }
         Type[] Messages { get; }
+        string OverflowBlobContainerName { get; }
 
         ICloudQueueSenderConfiguration SenderConfiguration { get; }
         Route[] Routes { get; }
+
+        ICloudQueueErrorConfiguration ErrorConfiguration { get; }
     }
 }

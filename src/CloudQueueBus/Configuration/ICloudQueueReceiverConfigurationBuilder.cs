@@ -6,9 +6,7 @@ namespace CloudQueueBus.Configuration
     public interface ICloudQueueReceiverConfigurationBuilder
     {
         ICloudQueueReceiverConfigurationBuilder WithDelayBetweenIdleReceives(TimeSpan value);
-
         ICloudQueueReceiverConfigurationBuilder WithQueueRequestOptions(QueueRequestOptions instance);
-        ICloudQueueReceiverConfigurationBuilder WithBatchCount(int value);
-        ICloudQueueReceiverConfigurationBuilder WithVisibilityTimeout(TimeSpan? value);
+        ICloudQueueReceiverConfigurationBuilder WithQueueVisibilityTimeout(TimeSpan? value);
     }
 }

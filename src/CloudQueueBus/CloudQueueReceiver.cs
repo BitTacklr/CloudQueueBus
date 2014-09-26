@@ -11,27 +11,31 @@ namespace CloudQueueBus
     {
         private readonly ICloudQueuePool _pool;
         private readonly IObserver<CloudQueueMessage> _observer;
-        private readonly ICloudQueueReceiverConfiguration _configuration;
+        private readonly ICloudQueueReceiverConfiguration _receiverConfiguration;
+        private readonly ICloudQueueErrorConfiguration _errorConfiguration;
         private readonly CancellationTokenSource _stopSource;
         private Task _task;
 
         public CloudQueueReceiver(
             ICloudQueuePool pool, 
             IObserver<CloudQueueMessage> observer,
-            ICloudQueueReceiverConfiguration configuration)
+            ICloudQueueReceiverConfiguration receiverConfiguration,
+            ICloudQueueErrorConfiguration errorConfiguration)
         {
             if (pool == null) throw new ArgumentNullException("pool");
             if (observer == null) throw new ArgumentNullException("observer");
-            if (configuration == null) throw new ArgumentNullException("configuration");
+            if (receiverConfiguration == null) throw new ArgumentNullException("receiverConfiguration");
+            if (errorConfiguration == null) throw new ArgumentNullException("errorConfiguration");
             _pool = pool;
             _observer = observer;
-            _configuration = configuration;
+            _receiverConfiguration = receiverConfiguration;
+            _errorConfiguration = errorConfiguration;
             _stopSource = new CancellationTokenSource();
         }
 
-        public ICloudQueueReceiverConfiguration Configuration
+        public ICloudQueueReceiverConfiguration ReceiverConfiguration
         {
-            get { return _configuration; }
+            get { return _receiverConfiguration; }
         }
 
         public ICloudQueuePool Pool
@@ -44,6 +48,11 @@ namespace CloudQueueBus
             get { return _observer; }
         }
 
+        public ICloudQueueErrorConfiguration ErrorConfiguration
+        {
+            get { return _errorConfiguration; }
+        }
+
         public void Start()
         {
             _task = Task.Run(new Func<Task>(Run), _stopSource.Token);
@@ -51,30 +60,35 @@ namespace CloudQueueBus
 
         private async Task Run()
         {
-            var queue = Pool.Take(Configuration.ReceiveAddress);
+            var receiveQueue = Pool.Take(ReceiverConfiguration.ReceiveQueue);
+            var errorQueue = Pool.Take(ErrorConfiguration.ErrorQueue);
             try
             {
                 while (!_stopSource.IsCancellationRequested)
                 {
                     try
                     {
-                        var messages = await queue.GetMessagesAsync(
-                            Configuration.BatchCount,
-                            Configuration.VisibilityTimeout,
-                            Configuration.QueueRequestOptions.Clone(),
+                        var message = await receiveQueue.GetMessageAsync(
+                            ReceiverConfiguration.VisibilityTimeout,
+                            ReceiverConfiguration.QueueRequestOptions.Clone(),
                             null,
                             _stopSource.Token);
 
-                        var receivedAnyMessages = false;
-                        foreach (var message in messages)
+                        if (message != null)
                         {
-                            receivedAnyMessages = true;
-                            Observer.OnNext(message);
-                            await queue.DeleteMessageAsync(message);
+                            if (message.DequeueCount > ErrorConfiguration.DequeueCountThreshold)
+                            {
+                                await errorQueue.AddMessageAsync(message, ErrorConfiguration.TimeToLive, ErrorConfiguration.InitialVisibilityDelay, ErrorConfiguration.QueueRequestOptions, null, _stopSource.Token);
+                            }
+                            else
+                            {
+                                Observer.OnNext(message);
+                            }
+                            await receiveQueue.DeleteMessageAsync(message, ReceiverConfiguration.QueueRequestOptions, null, _stopSource.Token);
                         }
-                        if (!receivedAnyMessages)
+                        else
                         {
-                            await Task.Delay(Configuration.DelayBetweenIdleReceives, _stopSource.Token);
+                            await Task.Delay(ReceiverConfiguration.DelayBetweenIdleReceives, _stopSource.Token);
                         }
                     }
                     catch (StorageException exception)
@@ -90,7 +104,8 @@ namespace CloudQueueBus
             }
             finally
             {
-                Pool.Return(queue);
+                Pool.Return(receiveQueue);
+                Pool.Return(errorQueue);
             }
         }
 

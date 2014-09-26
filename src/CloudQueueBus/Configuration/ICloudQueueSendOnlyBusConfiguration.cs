@@ -10,5 +10,7 @@ namespace CloudQueueBus.Configuration
 
         ICloudQueueSenderConfiguration SenderConfiguration { get; }
         Route[] Routes { get; }
+
+        string OverflowBlobContainerName { get; }
     }
 }

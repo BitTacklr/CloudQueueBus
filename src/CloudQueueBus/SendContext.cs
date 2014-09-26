@@ -14,7 +14,7 @@ namespace CloudQueueBus
             Message = null;
         }
 
-        SendContext(Uri @from, Uri to, Guid messageId, Guid? relatesToMessageId, Guid correlationId, object message)
+        SendContext(string @from, string to, Guid messageId, Guid? relatesToMessageId, Guid correlationId, object message)
         {
             From = @from;
             To = to;
@@ -24,19 +24,19 @@ namespace CloudQueueBus
             Message = message;
         }
 
-        public Uri From { get; private set; }
-        public Uri To { get; private set; }
+        public string From { get; private set; }
+        public string To { get; private set; }
         public Guid MessageId { get; private set; }
         public Guid? RelatesToMessageId { get; private set; }
         public Guid CorrelationId { get; private set; }
         public object Message { get; private set; }
 
-        public IConfigureSendContext SetFrom(Uri value)
+        public IConfigureSendContext SetFrom(string value)
         {
             return new SendContext(value, To, MessageId, RelatesToMessageId, CorrelationId, Message);
         }
 
-        public IConfigureSendContext SetTo(Uri value)
+        public IConfigureSendContext SetTo(string value)
         {
             return new SendContext(From, value, MessageId, RelatesToMessageId, CorrelationId, Message);
         }

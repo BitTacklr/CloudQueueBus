@@ -6,7 +6,7 @@ namespace CloudQueueBus.Configuration
 {
     public class CloudQueueSendOnlyBusConfiguration : ICloudQueueSendOnlyBusConfiguration
     {
-        public CloudQueueSendOnlyBusConfiguration(CloudStorageAccount storageAccount, JsonSerializer serializer, ICloudQueueSenderConfiguration senderConfiguration, Route[] routes)
+        public CloudQueueSendOnlyBusConfiguration(CloudStorageAccount storageAccount, JsonSerializer serializer, ICloudQueueSenderConfiguration senderConfiguration, Route[] routes, string overflowBlobContainerName)
         {
             if (storageAccount == null) throw new ArgumentNullException("storageAccount");
             if (serializer == null) throw new ArgumentNullException("serializer");
@@ -22,5 +22,6 @@ namespace CloudQueueBus.Configuration
         public JsonSerializer Serializer { get; private set; }
         public ICloudQueueSenderConfiguration SenderConfiguration { get; set; }
         public Route[] Routes { get; private set; }
+        public string OverflowBlobContainerName { get; private set; }
     }
 }

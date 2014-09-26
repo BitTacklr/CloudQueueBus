@@ -5,15 +5,15 @@ namespace CloudQueueBus.Configuration
 {
     public class CloudQueueSenderConfigurationBuilder : ICloudQueueSenderConfigurationBuilder
     {
-        private readonly Uri _address;
+        private readonly string _queueName;
         private QueueRequestOptions _queueRequestOptions;
         private TimeSpan? _timeToLive;
         private TimeSpan? _initialVisibilityDelay;
 
-        public CloudQueueSenderConfigurationBuilder(Uri address)
+        public CloudQueueSenderConfigurationBuilder(string queueName)
         {
-            if (address == null) throw new ArgumentNullException("address");
-            _address = address;
+            if (queueName == null) throw new ArgumentNullException("queueName");
+            _queueName = queueName;
         }
 
         public ICloudQueueSenderConfigurationBuilder WithQueueRequestOptions(QueueRequestOptions instance)
@@ -36,11 +36,13 @@ namespace CloudQueueBus.Configuration
 
         public ICloudQueueSenderConfiguration Build()
         {
-            return new CloudQueueSenderConfiguration(
-                _address,
-                _queueRequestOptions,
-                _timeToLive,
-                _initialVisibilityDelay);
+            return new CloudQueueSenderConfiguration
+            {
+                FromQueue = _queueName,
+                QueueRequestOptions = _queueRequestOptions,
+                InitialVisibilityDelay = _initialVisibilityDelay,
+                TimeToLive = _timeToLive
+            };
         }
     }
 }

@@ -6,12 +6,12 @@ namespace CloudQueueBus.Configuration
 {
     public class RouteConfigurationBuilder : IRouteConfigurationBuilder
     {
-        private readonly Uri _address;
+        private readonly string _queueName;
         private readonly HashSet<Type> _messages;
-        public RouteConfigurationBuilder(Uri address)
+        public RouteConfigurationBuilder(string queueName)
         {
-            if (address == null) throw new ArgumentNullException("address");
-            _address = address;
+            if (queueName == null) throw new ArgumentNullException("queueName");
+            _queueName = queueName;
             _messages = new HashSet<Type>();
         }
 
@@ -40,7 +40,7 @@ namespace CloudQueueBus.Configuration
 
         public Route[] Build()
         {
-            return _messages.Select(_ => new Route(_, _address)).ToArray();
+            return _messages.Select(_ => new Route(_, _queueName)).ToArray();
         }
     }
 }

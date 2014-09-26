@@ -5,19 +5,19 @@ namespace CloudQueueBus.Configuration
     public class Route
     {
         readonly Type _message;
-        readonly Uri _address;
+        readonly string _queueName;
 
-        public Route(Type message, Uri address)
+        public Route(Type message, string queueName)
         {
             if (message == null) throw new ArgumentNullException("message");
-            if (address == null) throw new ArgumentNullException("address");
+            if (queueName == null) throw new ArgumentNullException("queueName");
             _message = message;
-            _address = address;
+            _queueName = queueName;
         }
 
-        public Uri Address
+        public string QueueName
         {
-            get { return _address; }
+            get { return _queueName; }
         }
 
         public Type Message
@@ -29,7 +29,7 @@ namespace CloudQueueBus.Configuration
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return other._message == _message && Equals(other._address, _address);
+            return other._message == _message && Equals(other._queueName, _queueName);
         }
 
         public override bool Equals(object obj)
@@ -42,7 +42,7 @@ namespace CloudQueueBus.Configuration
 
         public override int GetHashCode()
         {
-            return _message.GetHashCode() ^ _address.GetHashCode();
+            return _message.GetHashCode() ^ _queueName.GetHashCode();
         }
     }
 }

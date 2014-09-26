@@ -5,15 +5,16 @@ namespace CloudQueueBus.Configuration
 {
     public class CloudQueueReceiverConfigurationBuilder : ICloudQueueReceiverConfigurationBuilder
     {
-        private readonly Uri _address;
-        private QueueRequestOptions _queueRequestOptions;
-        private int _batchCount;
-        private TimeSpan? _visibilityTimeout;
+        private readonly string _queueName;
+        private QueueRequestOptions _receiveQueueRequestOptions;
+        private TimeSpan? _receiveQueueVisibilityTimeout;
         private TimeSpan _delayBetweenIdleReceives;
 
-        public CloudQueueReceiverConfigurationBuilder(Uri address)
+        public CloudQueueReceiverConfigurationBuilder(string queueName)
         {
-            _address = address;
+            if (queueName == null) throw new ArgumentNullException("queueName");
+            _queueName = queueName;
+            _delayBetweenIdleReceives = TimeSpan.FromSeconds(5.0);
         }
 
         public ICloudQueueReceiverConfigurationBuilder WithDelayBetweenIdleReceives(TimeSpan value)
@@ -25,30 +26,25 @@ namespace CloudQueueBus.Configuration
         public ICloudQueueReceiverConfigurationBuilder WithQueueRequestOptions(QueueRequestOptions instance)
         {
             if (instance == null) throw new ArgumentNullException("instance");
-            _queueRequestOptions = instance;
+            _receiveQueueRequestOptions = instance;
             return this;
         }
 
-        public ICloudQueueReceiverConfigurationBuilder WithBatchCount(int value)
+        public ICloudQueueReceiverConfigurationBuilder WithQueueVisibilityTimeout(TimeSpan? value)
         {
-            _batchCount = value;
-            return this;
-        }
-
-        public ICloudQueueReceiverConfigurationBuilder WithVisibilityTimeout(TimeSpan? value)
-        {
-            _visibilityTimeout = value;
+            _receiveQueueVisibilityTimeout = value;
             return this;
         }
 
         public ICloudQueueReceiverConfiguration Build()
         {
-            return new CloudQueueReceiverConfiguration(
-                _address,
-                _delayBetweenIdleReceives,
-                _queueRequestOptions,
-                _batchCount,
-                _visibilityTimeout);
+            return new CloudQueueReceiverConfiguration
+            {
+                ReceiveQueue = _queueName,
+                DelayBetweenIdleReceives = _delayBetweenIdleReceives,
+                QueueRequestOptions = _receiveQueueRequestOptions,
+                VisibilityTimeout = _receiveQueueVisibilityTimeout
+            };
         }
     }
 }

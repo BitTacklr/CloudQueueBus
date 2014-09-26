@@ -4,12 +4,13 @@ namespace CloudQueueBus
 {
     public interface IConfigureCloudQueueMessageEnvelope : ICloudQueueMessageEnvelope
     {
-        void SetFrom(Uri value);
-        void SetTo(Uri value);
-        void SetMessageId(Guid value);
-        void SetRelatesToMessageId(Guid? value);
-        void SetCorrelationId(Guid value);
-        void SetContentType(string value);
-        void SetContent(byte[] value);
+        IConfigureCloudQueueMessageEnvelope SetFrom(string value);
+        IConfigureCloudQueueMessageEnvelope SetTo(string value);
+        IConfigureCloudQueueMessageEnvelope SetMessageId(Guid value);
+        IConfigureCloudQueueMessageEnvelope SetRelatesToMessageId(Guid? value);
+        IConfigureCloudQueueMessageEnvelope SetCorrelationId(Guid value);
+        IConfigureCloudQueueMessageEnvelope SetContentType(string value);
+        IConfigureCloudQueueMessageEnvelope SetContent(byte[] value);
+        IConfigureCloudQueueMessageEnvelope SetTime(DateTimeOffset value);
     }
 }

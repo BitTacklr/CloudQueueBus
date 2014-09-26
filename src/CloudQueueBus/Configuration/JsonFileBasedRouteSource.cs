@@ -58,7 +58,7 @@ namespace CloudQueueBus.Configuration
             // ReSharper restore UnusedAutoPropertyAccessor.Local
             [JsonProperty]
             // ReSharper disable UnusedAutoPropertyAccessor.Local
-            public Uri Address { get; set; }
+            public string Address { get; set; }
             // ReSharper restore UnusedAutoPropertyAccessor.Local
         }
     }

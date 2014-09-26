@@ -27,11 +27,11 @@ namespace CloudQueueBus
             get { return _configuration; }
         }
 
-        public void Send(Uri address, CloudQueueMessage message)
+        public void Send(string queueName, CloudQueueMessage message)
         {
-            if (address == null) throw new ArgumentNullException("address");
+            if (queueName == null) throw new ArgumentNullException("address");
             if (message == null) throw new ArgumentNullException("message");
-            var queue = Pool.Take(address);
+            var queue = Pool.Take(queueName);
             try
             {
                 queue.AddMessage(

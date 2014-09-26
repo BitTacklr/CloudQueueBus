@@ -30,52 +30,64 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Data.Edm, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.Edm.5.6.1\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Data.OData, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.OData.5.6.1\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.1\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage, Version=3.1.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=4.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WindowsAzure.Storage.3.1.0.1\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+      <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Spatial, Version=5.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Spatial.5.6.1\lib\net40\System.Spatial.dll</HintPath>
+      <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedVersionInfo.cs">
+      <Link>Properties\SharedVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="CloudBlobContainerPool.cs" />
+    <Compile Include="CloudBlobMessageEnvelope.cs" />
+    <Compile Include="CloudBlobMessageEnvelopeReader.cs" />
+    <Compile Include="CloudBlobMessageEnvelopeWriter.cs" />
     <Compile Include="CloudQueueReceiveContextObserver.cs" />
     <Compile Include="CloudQueueSendOnlyBus.cs" />
     <Compile Include="CloudQueueServerBus.cs" />
-    <Compile Include="Configuration\CloudQueuePublishConfiguration.cs" />
-    <Compile Include="Configuration\CloudQueuePublishConfigurationBuilder.cs" />
+    <Compile Include="Configuration\CloudQueueErrorConfiguration.cs" />
+    <Compile Include="Configuration\CloudQueueErrorConfigurationBuilder.cs" />
     <Compile Include="Configuration\CloudQueueReceiveConfiguration.cs" />
     <Compile Include="Configuration\CloudQueueReceiverConfigurationBuilder.cs" />
     <Compile Include="Configuration\CloudQueueSendOnlyBusConfiguration.cs" />
     <Compile Include="Configuration\CloudQueueSendOnlyBusConfigurationBuilder.cs" />
     <Compile Include="Configuration\CloudQueueServerBusConfiguration.cs" />
     <Compile Include="Configuration\CloudQueueServerBusConfigurationBuilder.cs" />
+    <Compile Include="Configuration\ICloudQueueErrorConfiguration.cs" />
+    <Compile Include="Configuration\ICloudQueueErrorConfigurationBuilder.cs" />
     <Compile Include="Configuration\ICloudQueuePublishConfiguration.cs" />
     <Compile Include="Configuration\ICloudQueuePublishConfigurationBuilder.cs" />
     <Compile Include="Configuration\ICloudQueueReceiverConfigurationBuilder.cs" />
@@ -87,13 +99,21 @@
     <Compile Include="Configuration\IRouteSource.cs" />
     <Compile Include="Configuration\JsonFileBasedRouteSource.cs" />
     <Compile Include="Configuration\RouteConfigurationBuilder.cs" />
+    <Compile Include="ContentTypes.cs" />
+    <Compile Include="ICloudBlobContainerPool.cs" />
+    <Compile Include="ICloudBlobMessageEnvelope.cs" />
+    <Compile Include="ICloudBlobMessageEnvelopeReader.cs" />
+    <Compile Include="ICloudBlobMessageEnvelopeWriter.cs" />
     <Compile Include="ICloudQueueSendOnlyBus.cs" />
     <Compile Include="ICloudQueueServerBus.cs" />
+    <Compile Include="IConfigureCloudBlobMessageEnvelope.cs" />
     <Compile Include="IMessageContentTypeResolver.cs" />
     <Compile Include="IMessageTypeResolver.cs" />
     <Compile Include="IReceiveContextSender.cs" />
+    <Compile Include="Limits.cs" />
     <Compile Include="MessageContentTypeResolver.cs" />
     <Compile Include="MessageTypeResolver.cs" />
+    <Compile Include="BlobMetaData.cs" />
     <Compile Include="QueueRequestOptionsExtensions.cs" />
     <Compile Include="CloudQueueBusFactory.cs" />
     <Compile Include="Configuration\CloudQueueSenderConfiguration.cs" />
@@ -106,7 +126,7 @@
     <Compile Include="CloudQueueMessageObserver.cs" />
     <Compile Include="CloudQueuePool.cs" />
     <Compile Include="CloudQueuePublisherBus.cs" />
-    <Compile Include="Configuration\CloudQueuePublisherConfiguration.cs" />
+    <Compile Include="Configuration\CloudQueuePublisherBusConfiguration.cs" />
     <Compile Include="Configuration\CloudQueuePublisherBusConfigurationBuilder.cs" />
     <Compile Include="CloudQueueReceiver.cs" />
     <Compile Include="Configuration\CloudQueueReceiverConfiguration.cs" />
@@ -131,7 +151,6 @@
     <Compile Include="IReceiveContext.cs" />
     <Compile Include="ISendContext.cs" />
     <Compile Include="ISendContextSender.cs" />
-    <Compile Include="ISenderConfiguration.cs" />
     <Compile Include="Configuration\ISubscriptionConfigurationBuilder.cs" />
     <Compile Include="Configuration\ISubscriptionSource.cs" />
     <Compile Include="Configuration\JsonFileBasedSubscriptionSource.cs" />

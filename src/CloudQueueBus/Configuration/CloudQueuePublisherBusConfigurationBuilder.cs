@@ -12,6 +12,7 @@ namespace CloudQueueBus.Configuration
         private CloudStorageAccount _storageAccount;
         private ICloudQueueSenderConfiguration _senderConfiguration;
         private readonly HashSet<Subscription> _subscriptions;
+        private string _overflowBlobContainerName;
 
         public CloudQueuePublisherBusConfigurationBuilder()
         {
@@ -21,22 +22,21 @@ namespace CloudQueueBus.Configuration
             _subscriptions = new HashSet<Subscription>();
         }
 
-        public ICloudQueuePublisherBusConfigurationBuilder PublishFrom(Uri address, Action<ICloudQueueSenderConfigurationBuilder> configure)
+        public ICloudQueuePublisherBusConfigurationBuilder PublishFrom(string queueName, Action<ICloudQueueSenderConfigurationBuilder> configure)
         {
-            if (address == null) throw new ArgumentNullException("address");
+            if (queueName == null) throw new ArgumentNullException("address");
             if (configure == null) throw new ArgumentNullException("configure");
-            var builder = new CloudQueueSenderConfigurationBuilder(address);
+            var builder = new CloudQueueSenderConfigurationBuilder(queueName);
             configure(builder);
             _senderConfiguration = builder.Build();
             return this;
         }
 
-        public ICloudQueuePublisherBusConfigurationBuilder PublishTo(Uri address,
-            Action<ISubscriptionConfigurationBuilder> configure)
+        public ICloudQueuePublisherBusConfigurationBuilder PublishTo(string queueName, Action<ISubscriptionConfigurationBuilder> configure)
         {
-            if (address == null) throw new ArgumentNullException("address");
+            if (queueName == null) throw new ArgumentNullException("address");
             if (configure == null) throw new ArgumentNullException("configure");
-            var builder = new SubscriptionConfigurationBuilder(address);
+            var builder = new SubscriptionConfigurationBuilder(queueName);
             configure(builder);
             foreach (var subscription in builder.Build())
             {
@@ -69,13 +69,21 @@ namespace CloudQueueBus.Configuration
             return this;
         }
 
+        public ICloudQueuePublisherBusConfigurationBuilder UsingOverflowBlobContainer(string containerName)
+        {
+            if (containerName == null) throw new ArgumentNullException("containerName");
+            _overflowBlobContainerName = containerName;
+            return this;
+        }
+
         public ICloudQueuePublisherConfiguration Build()
         {
-            return new CloudQueuePublisherConfiguration(
+            return new CloudQueuePublisherBusConfiguration(
                 _storageAccount,
                 _serializer,
                 _subscriptions.ToArray(),
-                _senderConfiguration);
+                _senderConfiguration, 
+                _overflowBlobContainerName);
         }
     }
 }

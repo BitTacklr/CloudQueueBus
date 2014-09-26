@@ -27,6 +27,8 @@ namespace CloudQueueBus
             writer.WriteValue(envelope.ContentType);
             writer.WritePropertyName("Content");
             writer.WriteValue(envelope.Content);
+            writer.WritePropertyName("Time");
+            writer.WriteValue(envelope.Time);
             writer.WriteEndObject();
         }
     }

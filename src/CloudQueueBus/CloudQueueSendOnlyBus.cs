@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CloudQueueBus.Configuration;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace CloudQueueBus
@@ -9,7 +10,8 @@ namespace CloudQueueBus
     {
         private readonly ICloudQueueSendOnlyBusConfiguration _configuration;
         private readonly SendContextSender _sender;
-        private CloudQueueClient _client;
+        private CloudQueueClient _queueClient;
+        private CloudBlobClient _blobClient;
 
         public CloudQueueSendOnlyBus(ICloudQueueSendOnlyBusConfiguration configuration, SendContextSender sender)
         {
@@ -24,9 +26,14 @@ namespace CloudQueueBus
             get { return _configuration; }
         }
 
-        private CloudQueueClient Client
+        private CloudQueueClient QueueClient
         {
-            get { return _client ?? (_client = Configuration.StorageAccount.CreateCloudQueueClient()); }
+            get { return _queueClient ?? (_queueClient = Configuration.StorageAccount.CreateCloudQueueClient()); }
+        }
+
+        private CloudBlobClient BlobClient
+        {
+            get { return _blobClient ?? (_blobClient = Configuration.StorageAccount.CreateCloudBlobClient()); }
         }
 
         public SendContextSender Sender
@@ -38,14 +45,16 @@ namespace CloudQueueBus
         {
             foreach (var sendQueue in
                 Configuration.Routes.
-                    Select(_ => _.Address).
+                    Select(_ => _.QueueName).
                     Distinct().
                     Select(address =>
-                        Client.GetQueueReference(
-                            CloudQueueUri.ParseUsing(Client.BaseUri, address).Name)))
+                        QueueClient.GetQueueReference(address)))
             {
                 sendQueue.CreateIfNotExists();
             }
+            var overflowContainer =
+                BlobClient.GetContainerReference(Configuration.OverflowBlobContainerName);
+            overflowContainer.CreateIfNotExists();
         }
 
         public void Send(Guid id, object message)
@@ -57,8 +66,8 @@ namespace CloudQueueBus
             {
                 _sender.Send(
                     new SendContext().
-                        SetFrom(Configuration.SenderConfiguration.FromAddress).
-                        SetTo(route.Address).
+                        SetFrom(Configuration.SenderConfiguration.FromQueue).
+                        SetTo(route.QueueName).
                         SetMessageId(id).
                         SetCorrelationId(id).
                         SetMessage(message));

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CloudQueueBus.Configuration;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace CloudQueueBus
@@ -9,7 +10,8 @@ namespace CloudQueueBus
     {
         private readonly ICloudQueuePublisherConfiguration _configuration;
         private readonly ISendContextSender _sender;
-        private CloudQueueClient _client;
+        private CloudQueueClient _queueClient;
+        private CloudBlobClient _blobClient;
 
         public CloudQueuePublisherBus(ICloudQueuePublisherConfiguration configuration, ISendContextSender sender)
         {
@@ -29,23 +31,30 @@ namespace CloudQueueBus
             get { return _sender; }
         }
 
-        private CloudQueueClient Client
+        private CloudQueueClient QueueClient
         {
-            get { return _client ?? (_client = Configuration.StorageAccount.CreateCloudQueueClient()); }
+            get { return _queueClient ?? (_queueClient = Configuration.StorageAccount.CreateCloudQueueClient()); }
+        }
+
+        private CloudBlobClient BlobClient
+        {
+            get { return _blobClient ?? (_blobClient = Configuration.StorageAccount.CreateCloudBlobClient()); }
         }
 
         public void Initialize()
         {
             foreach (var sendQueue in 
                 Configuration.Subscriptions.
-                    Select(_ => _.Address).
+                    Select(_ => _.QueueName).
                     Distinct().
                     Select(address => 
-                        Client.GetQueueReference(
-                            CloudQueueUri.ParseUsing(Client.BaseUri, address).Name)))
+                        QueueClient.GetQueueReference(address)))
             {
                 sendQueue.CreateIfNotExists();
             }
+            var overflowContainer =
+                BlobClient.GetContainerReference(Configuration.OverflowBlobContainerName);
+            overflowContainer.CreateIfNotExists();
         }
 
         public void Publish(Guid id, object message)
@@ -59,16 +68,17 @@ namespace CloudQueueBus
 
             foreach (var subscription in Configuration.Subscriptions.Where(_ => _.Message == message.GetType()))
             {
-                Publish(context, subscription.Address);
+                Publish(context, subscription.QueueName);
             }
         }
 
-        void Publish(IConfigureSendContext context, Uri address)
+        void Publish(IConfigureSendContext context, string address)
         {
-            Sender.Send(context.
-                SetFrom(Configuration.SenderConfiguration.FromAddress).
-                SetTo(address).
-                SetCorrelationId(SerialGuid.NewGuid()));
+            Sender.Send(
+                context.
+                    SetFrom(Configuration.SenderConfiguration.FromQueue).
+                    SetTo(address).
+                    SetCorrelationId(SerialGuid.NewGuid()));
         }
     }
 }

@@ -40,9 +40,6 @@ namespace CloudQueueBus
 
         public void OnNext(ICloudQueueMessageEnvelope value)
         {
-            //TODO: If content was stored in blob storage, now's a good time to go retrieve that
-            //Or maybe we should move that piece into another observer
-
             var context = 
                 new ReceiveContext().
                 SetFrom(value.From).

@@ -51,10 +51,10 @@ namespace CloudQueueBus
             InnerSender.Send(context);
         }
 
-        private Uri GetMessageAddress(Type message)
+        private string GetMessageAddress(Type message)
         {
             var route = Routes.FirstOrDefault(_ => _.Message == message);
-            return route != null ? route.Address : null;
+            return route != null ? route.QueueName : null;
         }
     }
 }

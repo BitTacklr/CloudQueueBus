@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 
 namespace CloudQueueBus.Configuration
 {
-    public class CloudQueuePublisherConfiguration : ICloudQueuePublisherConfiguration
+    public class CloudQueuePublisherBusConfiguration : ICloudQueuePublisherConfiguration
     {
-        public CloudQueuePublisherConfiguration(CloudStorageAccount storageAccount, JsonSerializer serializer, Subscription[] subscriptions, ICloudQueueSenderConfiguration senderConfiguration)
+        public CloudQueuePublisherBusConfiguration(CloudStorageAccount storageAccount, JsonSerializer serializer, Subscription[] subscriptions, ICloudQueueSenderConfiguration senderConfiguration, string overflowBlobContainerName)
         {
             if (storageAccount == null) throw new ArgumentNullException("storageAccount");
             if (serializer == null) throw new ArgumentNullException("serializer");
@@ -22,5 +22,6 @@ namespace CloudQueueBus.Configuration
         public JsonSerializer Serializer { get; private set; }
         public Subscription[] Subscriptions { get; private set; }
         public ICloudQueueSenderConfiguration SenderConfiguration { get; private set; }
+        public string OverflowBlobContainerName { get; private set; }
     }
 }

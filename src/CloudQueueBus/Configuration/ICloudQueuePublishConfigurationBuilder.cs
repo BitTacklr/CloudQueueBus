@@ -9,7 +9,7 @@ namespace CloudQueueBus.Configuration
         ICloudQueuePublishConfigurationBuilder WithTimeToLive(TimeSpan? value);
         ICloudQueuePublishConfigurationBuilder WithInitialVisibilityDelay(TimeSpan? value);
 
-        ICloudQueuePublishConfigurationBuilder SubscribeAt(Uri address, Action<ISubscriptionConfigurationBuilder> configure);
+        ICloudQueuePublishConfigurationBuilder SubscribeAt(string queueName, Action<ISubscriptionConfigurationBuilder> configure);
         ICloudQueuePublishConfigurationBuilder SubscribeUsing(ISubscriptionSource source);
     }
 }

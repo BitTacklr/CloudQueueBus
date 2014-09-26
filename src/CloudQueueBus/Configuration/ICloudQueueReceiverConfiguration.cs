@@ -5,12 +5,9 @@ namespace CloudQueueBus.Configuration
 {
     public interface ICloudQueueReceiverConfiguration
     {
-        Uri ReceiveAddress { get; }
-
+        string ReceiveQueue { get; }
         QueueRequestOptions QueueRequestOptions { get; }
-        int BatchCount { get; }
         TimeSpan? VisibilityTimeout { get; }
-
         TimeSpan DelayBetweenIdleReceives { get; }
     }
 }

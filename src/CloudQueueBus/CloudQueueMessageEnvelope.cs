@@ -4,47 +4,80 @@ namespace CloudQueueBus
 {
     public class CloudQueueMessageEnvelope : IConfigureCloudQueueMessageEnvelope
     {
-        public Uri From { get; private set; }
-        public Uri To { get; private set; }
+        public string From { get; private set; }
+        public string To { get; private set; }
         public Guid MessageId { get; private set; }
         public Guid? RelatesToMessageId { get; private set; }
         public Guid CorrelationId { get; private set; }
         public string ContentType { get; private set; }
         public byte[] Content { get; private set; }
+        public DateTimeOffset Time { get; private set; }
 
-        public void SetFrom(Uri value)
+        public CloudQueueMessageEnvelope()
         {
-            From = value;
+            Content = new byte[0];
         }
 
-        public void SetTo(Uri value)
+        CloudQueueMessageEnvelope(string @from, string to, Guid messageId, Guid? relatesToMessageId, Guid correlationId, string contentType, byte[] content, DateTimeOffset time)
         {
-            To = value;
+            From = @from;
+            To = to;
+            MessageId = messageId;
+            RelatesToMessageId = relatesToMessageId;
+            CorrelationId = correlationId;
+            ContentType = contentType;
+            Content = content;
+            Time = time;
         }
 
-        public void SetMessageId(Guid value)
+        public IConfigureCloudQueueMessageEnvelope SetFrom(string value)
         {
-            MessageId = value;
+            return new CloudQueueMessageEnvelope(value, To, MessageId, RelatesToMessageId, CorrelationId, ContentType, Content, Time);
         }
 
-        public void SetRelatesToMessageId(Guid? value)
+        public IConfigureCloudQueueMessageEnvelope SetTo(string value)
         {
-            RelatesToMessageId = value;
+            return new CloudQueueMessageEnvelope(From, value, MessageId, RelatesToMessageId, CorrelationId, ContentType, Content, Time);
         }
 
-        public void SetCorrelationId(Guid value)
+        public IConfigureCloudQueueMessageEnvelope SetMessageId(Guid value)
         {
-            CorrelationId = value;
+            return new CloudQueueMessageEnvelope(From, To, value, RelatesToMessageId, CorrelationId, ContentType, Content, Time);
         }
 
-        public void SetContentType(string value)
+        public IConfigureCloudQueueMessageEnvelope SetRelatesToMessageId(Guid? value)
         {
-            ContentType = value;
+            return new CloudQueueMessageEnvelope(From, To, MessageId, value, CorrelationId, ContentType, Content, Time);
         }
 
-        public void SetContent(byte[] value)
+        public IConfigureCloudQueueMessageEnvelope SetCorrelationId(Guid value)
         {
-            Content = value;
+            return new CloudQueueMessageEnvelope(From, To, MessageId, RelatesToMessageId, value, ContentType, Content, Time);
+        }
+
+        public IConfigureCloudQueueMessageEnvelope SetContentType(string value)
+        {
+            return new CloudQueueMessageEnvelope(From, To, MessageId, RelatesToMessageId, CorrelationId, value, Content, Time);
+        }
+
+        public IConfigureCloudQueueMessageEnvelope SetContent(byte[] value)
+        {
+            return new CloudQueueMessageEnvelope(From, To, MessageId, RelatesToMessageId, CorrelationId, ContentType, value, Time);
+        }
+
+        public IConfigureCloudQueueMessageEnvelope SetTime(DateTimeOffset value)
+        {
+            return new CloudQueueMessageEnvelope(From, To, MessageId, RelatesToMessageId, CorrelationId, ContentType, Content, value);
+        }
+
+        public IConfigureCloudBlobMessageEnvelope ToBlobEnvelope(Guid blobId)
+        {
+            return new CloudBlobMessageEnvelope().
+                SetBlobId(blobId).
+                SetMessageId(MessageId).
+                SetContentType(ContentType).
+                SetContent(Content).
+                SetTime(Time);
         }
     }
 }

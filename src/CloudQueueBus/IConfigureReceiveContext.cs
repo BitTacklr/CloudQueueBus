@@ -4,8 +4,8 @@ namespace CloudQueueBus
 {
     public interface IConfigureReceiveContext : IReceiveContext
     {
-        IConfigureReceiveContext SetFrom(Uri value);
-        IConfigureReceiveContext SetTo(Uri value);
+        IConfigureReceiveContext SetFrom(string value);
+        IConfigureReceiveContext SetTo(string value);
         IConfigureReceiveContext SetMessageId(Guid value);
         IConfigureReceiveContext SetRelatesToMessageId(Guid? value);
         IConfigureReceiveContext SetCorrelationId(Guid value);

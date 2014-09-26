@@ -9,11 +9,13 @@ namespace CloudQueueBus.Configuration
     public class CloudQueueServerBusConfigurationBuilder : ICloudQueueServerBusConfigurationBuilder
     {
         private ICloudQueueReceiverConfiguration _receiverConfiguration;
+        private ICloudQueueErrorConfiguration _errorConfiguration;
         private JsonSerializer _serializer;
         private CloudStorageAccount _storageAccount;
         private readonly HashSet<Route> _routes;
         private IObserver<IReceiveContext> _observer;
         private readonly HashSet<Type> _messages;
+        private string _overflowBlobContainerName;
 
         public CloudQueueServerBusConfigurationBuilder()
         {
@@ -21,13 +23,23 @@ namespace CloudQueueBus.Configuration
             _messages = new HashSet<Type>();
         }
 
-        public ICloudQueueServerBusConfigurationBuilder ReceiveFrom(Uri address, Action<ICloudQueueReceiverConfigurationBuilder> configure)
+        public ICloudQueueServerBusConfigurationBuilder ReceiveFrom(string queueName, Action<ICloudQueueReceiverConfigurationBuilder> configure)
         {
-            if (address == null) throw new ArgumentNullException("address");
+            if (queueName == null) throw new ArgumentNullException("queueName");
             if (configure == null) throw new ArgumentNullException("configure");
-            var builder = new CloudQueueReceiverConfigurationBuilder(address);
+            var builder = new CloudQueueReceiverConfigurationBuilder(queueName);
             configure(builder);
             _receiverConfiguration = builder.Build();
+            return this;
+        }
+
+        public ICloudQueueServerBusConfigurationBuilder ErrorTo(string queueName, Action<ICloudQueueErrorConfigurationBuilder> configure)
+        {
+            if (queueName == null) throw new ArgumentNullException("queueName");
+            if (configure == null) throw new ArgumentNullException("configure");
+            var builder = new CloudQueueErrorConfigurationBuilder(queueName);
+            configure(builder);
+            _errorConfiguration = builder.Build();
             return this;
         }
 
@@ -75,11 +87,18 @@ namespace CloudQueueBus.Configuration
             return this;
         }
 
-        public ICloudQueueServerBusConfigurationBuilder RouteTo(Uri address, Action<IRouteConfigurationBuilder> configure)
+        public ICloudQueueServerBusConfigurationBuilder UsingOverflowBlobContainer(string containerName)
         {
-            if (address == null) throw new ArgumentNullException("address");
+            if (containerName == null) throw new ArgumentNullException("containerName");
+            _overflowBlobContainerName = containerName;
+            return this;
+        }
+
+        public ICloudQueueServerBusConfigurationBuilder RouteTo(string queueName, Action<IRouteConfigurationBuilder> configure)
+        {
+            if (queueName == null) throw new ArgumentNullException("queueName");
             if (configure == null) throw new ArgumentNullException("configure");
-            var builder = new RouteConfigurationBuilder(address);
+            var builder = new RouteConfigurationBuilder(queueName);
             configure(builder);
             foreach (var route in builder.Build())
             {
@@ -107,12 +126,14 @@ namespace CloudQueueBus.Configuration
                 _observer,
                 _receiverConfiguration,
                 _messages.ToArray(),
-                new CloudQueueSenderConfiguration(
-                    _receiverConfiguration.ReceiveAddress,
-                    _receiverConfiguration.QueueRequestOptions,
-                    null,
-                    null), 
-                _routes.ToArray());
+                new CloudQueueSenderConfiguration
+                {
+                    FromQueue = _receiverConfiguration.ReceiveQueue,
+                    QueueRequestOptions = _receiverConfiguration.QueueRequestOptions
+                }, 
+                _routes.ToArray(),
+                _errorConfiguration, 
+                _overflowBlobContainerName);
         }
     }
 }

@@ -11,13 +11,15 @@ namespace CloudQueueBus
             var builder = new CloudQueuePublisherBusConfigurationBuilder();
             configure(builder);
             var configuration = builder.Build();
+            var queuePool = new CloudQueuePool(
+                configuration.StorageAccount.CreateCloudQueueClient());
+            var blobContainerPool = new CloudBlobContainerPool(
+                configuration.StorageAccount.CreateCloudBlobClient());
             var sender = new SendContextSender(
                 new CloudQueueMessageEnvelopeSender(
-                    new CloudQueueSender(
-                        new CloudQueuePool(
-                            configuration.StorageAccount.CreateCloudQueueClient()), 
-                            configuration.SenderConfiguration),
-                    new CloudQueueMessageEnvelopeJsonWriter()),
+                    new CloudQueueSender(queuePool, configuration.SenderConfiguration),
+                    new CloudQueueMessageEnvelopeJsonWriter(),
+                    new CloudBlobMessageEnvelopeWriter(blobContainerPool, configuration.OverflowBlobContainerName)),
                 new MessageTypeResolver(), 
                 configuration.Serializer);
             return new CloudQueuePublisherBus(configuration, sender);
@@ -29,20 +31,25 @@ namespace CloudQueueBus
             var builder = new CloudQueueServerBusConfigurationBuilder();
             configure(builder);
             var configuration = builder.Build();
-            var pool = new CloudQueuePool(
+            var queuePool = new CloudQueuePool(
                 configuration.StorageAccount.CreateCloudQueueClient());
+            var blobContainerPool = new CloudBlobContainerPool(
+                configuration.StorageAccount.CreateCloudBlobClient());
             var sender = new SendContextSender(
                 new CloudQueueMessageEnvelopeSender(
                     new CloudQueueSender(
-                        new CloudQueuePool(configuration.StorageAccount.CreateCloudQueueClient()),
+                        queuePool,
                         configuration.SenderConfiguration),
-                    new CloudQueueMessageEnvelopeJsonWriter()),
+                    new CloudQueueMessageEnvelopeJsonWriter(),
+                    new CloudBlobMessageEnvelopeWriter(
+                        blobContainerPool, configuration.OverflowBlobContainerName)),
                 new MessageTypeResolver(),
                 configuration.Serializer);
             var receiver = new CloudQueueReceiver(
-                pool,
+                queuePool,
                 new CloudQueueMessageObserver(
                     new CloudQueueMessageEnvelopeJsonReader(),
+                    new CloudBlobMessageEnvelopeReader(blobContainerPool, configuration.OverflowBlobContainerName), 
                     new CloudQueueMessageEnvelopeObserver(
                         new MessageContentTypeResolver(configuration.Messages),
                         configuration.Serializer,
@@ -50,7 +57,8 @@ namespace CloudQueueBus
                             sender,
                             configuration.Observer, 
                             configuration.Routes))),
-                configuration.ReceiverConfiguration);
+                configuration.ReceiverConfiguration,
+                configuration.ErrorConfiguration);
             return new CloudQueueServerBus(configuration, receiver);
         }
 
@@ -60,14 +68,15 @@ namespace CloudQueueBus
             var builder = new CloudQueueSendOnlyBusConfigurationBuilder();
             configure(builder);
             var configuration = builder.Build();
-            var pool = new CloudQueuePool(
+            var queuePool = new CloudQueuePool(
                 configuration.StorageAccount.CreateCloudQueueClient());
+            var blobContainerPool = new CloudBlobContainerPool(
+                configuration.StorageAccount.CreateCloudBlobClient());
             var sender = new SendContextSender(
                 new CloudQueueMessageEnvelopeSender(
-                    new CloudQueueSender(
-                        pool,
-                        configuration.SenderConfiguration),
-                    new CloudQueueMessageEnvelopeJsonWriter()),
+                    new CloudQueueSender(queuePool, configuration.SenderConfiguration),
+                    new CloudQueueMessageEnvelopeJsonWriter(),
+                    new CloudBlobMessageEnvelopeWriter(blobContainerPool, configuration.OverflowBlobContainerName)),
                 new MessageTypeResolver(),
                 configuration.Serializer);
             return new CloudQueueSendOnlyBus(configuration, sender);

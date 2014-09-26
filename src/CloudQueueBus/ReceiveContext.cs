@@ -15,7 +15,7 @@ namespace CloudQueueBus
             Sender = null;
         }
 
-        ReceiveContext(Uri @from, Uri to, Guid messageId, Guid? relatesToMessageId, Guid correlationId, object message, IReceiveContextSender sender)
+        ReceiveContext(string @from, string to, Guid messageId, Guid? relatesToMessageId, Guid correlationId, object message, IReceiveContextSender sender)
         {
             From = @from;
             To = to;
@@ -26,20 +26,20 @@ namespace CloudQueueBus
             Sender = sender;
         }
 
-        public Uri From { get; private set; }
-        public Uri To { get; private set; }
+        public string From { get; private set; }
+        public string To { get; private set; }
         public Guid MessageId { get; private set; }
         public Guid? RelatesToMessageId { get; private set; }
         public Guid CorrelationId { get; private set; }
         public object Message { get; private set; }
         public IReceiveContextSender Sender { get; private set; }
 
-        public IConfigureReceiveContext SetFrom(Uri value)
+        public IConfigureReceiveContext SetFrom(string value)
         {
             return new ReceiveContext(value, To, MessageId, RelatesToMessageId, CorrelationId, Message, Sender);
         }
 
-        public IConfigureReceiveContext SetTo(Uri value)
+        public IConfigureReceiveContext SetTo(string value)
         {
             return new ReceiveContext(From, value, MessageId, RelatesToMessageId, CorrelationId, Message, Sender);
         }

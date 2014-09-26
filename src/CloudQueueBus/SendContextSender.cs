@@ -40,14 +40,14 @@ namespace CloudQueueBus
 
         public void Send(IConfigureSendContext context)
         {
-            var envelope = new CloudQueueMessageEnvelope();
-            envelope.SetFrom(context.From);
-            envelope.SetTo(context.To);
-            envelope.SetMessageId(context.MessageId);
-            envelope.SetRelatesToMessageId(context.RelatesToMessageId);
-            envelope.SetCorrelationId(context.CorrelationId);
-            envelope.SetContentType(Resolver.GetContentType(context.Message));
-            envelope.SetContent(SerializeMessage(context));
+            var envelope = new CloudQueueMessageEnvelope().
+                SetFrom(context.From).
+                SetTo(context.To).
+                SetMessageId(context.MessageId).
+                SetRelatesToMessageId(context.RelatesToMessageId).
+                SetCorrelationId(context.CorrelationId).
+                SetContentType(Resolver.GetContentType(context.Message)).
+                SetContent(SerializeMessage(context));
 
             InnerSender.Send(envelope);
         }

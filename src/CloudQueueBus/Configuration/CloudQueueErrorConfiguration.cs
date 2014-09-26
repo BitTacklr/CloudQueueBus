@@ -3,11 +3,12 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace CloudQueueBus.Configuration
 {
-    public class CloudQueueSenderConfiguration : ICloudQueueSenderConfiguration
+    public class CloudQueueErrorConfiguration : ICloudQueueErrorConfiguration
     {
-        public string FromQueue { get; set; }
+        public string ErrorQueue { get; set; }
         public QueueRequestOptions QueueRequestOptions { get; set; }
         public TimeSpan? TimeToLive { get; set; }
         public TimeSpan? InitialVisibilityDelay { get; set; }
+        public int DequeueCountThreshold { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CloudQueueBus.Configuration;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace CloudQueueBus
@@ -9,7 +10,8 @@ namespace CloudQueueBus
     {
         private readonly ICloudQueueServerBusConfiguration _configuration;
         private readonly ICloudQueueReceiver _receiver;
-        private CloudQueueClient _client;
+        private CloudQueueClient _queueClient;
+        private CloudBlobClient _blobClient;
 
         public CloudQueueServerBus(ICloudQueueServerBusConfiguration configuration, ICloudQueueReceiver receiver)
         {
@@ -29,27 +31,36 @@ namespace CloudQueueBus
             get { return _receiver; }
         }
 
-        private CloudQueueClient Client
+        private CloudQueueClient QueueClient
         {
-            get { return _client ?? (_client = Configuration.StorageAccount.CreateCloudQueueClient()); }
+            get { return _queueClient ?? (_queueClient = Configuration.StorageAccount.CreateCloudQueueClient()); }
+        }
+
+        private CloudBlobClient BlobClient
+        {
+            get { return _blobClient ?? (_blobClient = Configuration.StorageAccount.CreateCloudBlobClient()); }
         }
 
         public void Initialize()
         {
-            var receiveQueue = 
-                Client.GetQueueReference(
-                    CloudQueueUri.ParseUsing(Client.BaseUri, Configuration.ReceiverConfiguration.ReceiveAddress).Name);
+            var receiveQueue =
+                QueueClient.GetQueueReference(Configuration.ReceiverConfiguration.ReceiveQueue);
             receiveQueue.CreateIfNotExists();
+            var errorQueue =
+                QueueClient.GetQueueReference(Configuration.ErrorConfiguration.ErrorQueue);
+            errorQueue.CreateIfNotExists();
             foreach (var sendQueue in
                 Configuration.Routes.
-                    Select(_ => _.Address).
+                    Select(_ => _.QueueName).
                     Distinct().
                     Select(address =>
-                        Client.GetQueueReference(
-                            CloudQueueUri.ParseUsing(Client.BaseUri, address).Name)))
+                        QueueClient.GetQueueReference(address)))
             {
                 sendQueue.CreateIfNotExists();
             }
+            var overflowContainer =
+                BlobClient.GetContainerReference(Configuration.OverflowBlobContainerName);
+            overflowContainer.CreateIfNotExists();
         }
 
         public void Start()

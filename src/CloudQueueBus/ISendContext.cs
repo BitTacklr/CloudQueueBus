@@ -4,8 +4,8 @@ namespace CloudQueueBus
 {
     public interface ISendContext
     {
-        Uri From { get; }
-        Uri To { get; }
+        string From { get; }
+        string To { get; }
         Guid MessageId { get; }
         Guid? RelatesToMessageId { get; }
         Guid CorrelationId { get; }
