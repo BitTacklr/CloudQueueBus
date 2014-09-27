@@ -7,6 +7,6 @@ namespace CloudQueueBus.Configuration
     {
         ICloudQueueReceiverConfigurationBuilder WithDelayBetweenIdleReceives(TimeSpan value);
         ICloudQueueReceiverConfigurationBuilder WithQueueRequestOptions(QueueRequestOptions instance);
-        ICloudQueueReceiverConfigurationBuilder WithQueueVisibilityTimeout(TimeSpan? value);
+        ICloudQueueReceiverConfigurationBuilder WithVisibilityTimeout(TimeSpan? value);
     }
 }

@@ -6,8 +6,8 @@ namespace CloudQueueBus.Configuration
     public class CloudQueueReceiverConfigurationBuilder : ICloudQueueReceiverConfigurationBuilder
     {
         private readonly string _queueName;
-        private QueueRequestOptions _receiveQueueRequestOptions;
-        private TimeSpan? _receiveQueueVisibilityTimeout;
+        private QueueRequestOptions _queueRequestOptions;
+        private TimeSpan? _visibilityTimeout;
         private TimeSpan _delayBetweenIdleReceives;
 
         public CloudQueueReceiverConfigurationBuilder(string queueName)
@@ -26,13 +26,13 @@ namespace CloudQueueBus.Configuration
         public ICloudQueueReceiverConfigurationBuilder WithQueueRequestOptions(QueueRequestOptions instance)
         {
             if (instance == null) throw new ArgumentNullException("instance");
-            _receiveQueueRequestOptions = instance;
+            _queueRequestOptions = instance;
             return this;
         }
 
-        public ICloudQueueReceiverConfigurationBuilder WithQueueVisibilityTimeout(TimeSpan? value)
+        public ICloudQueueReceiverConfigurationBuilder WithVisibilityTimeout(TimeSpan? value)
         {
-            _receiveQueueVisibilityTimeout = value;
+            _visibilityTimeout = value;
             return this;
         }
 
@@ -42,8 +42,8 @@ namespace CloudQueueBus.Configuration
             {
                 ReceiveQueue = _queueName,
                 DelayBetweenIdleReceives = _delayBetweenIdleReceives,
-                QueueRequestOptions = _receiveQueueRequestOptions,
-                VisibilityTimeout = _receiveQueueVisibilityTimeout
+                QueueRequestOptions = _queueRequestOptions,
+                VisibilityTimeout = _visibilityTimeout
             };
         }
     }

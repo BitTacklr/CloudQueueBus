@@ -8,6 +8,7 @@ namespace CloudQueueBus.Configuration
     public interface ICloudQueueServerBusConfigurationBuilder
     {
         ICloudQueueServerBusConfigurationBuilder ReceiveFrom(string queueName, Action<ICloudQueueReceiverConfigurationBuilder> configure);
+        ICloudQueueServerBusConfigurationBuilder ErrorTo(string queueName, Action<ICloudQueueErrorConfigurationBuilder> configure);
         ICloudQueueServerBusConfigurationBuilder ObserveOn(IObserver<IReceiveContext> observer);
         ICloudQueueServerBusConfigurationBuilder Accept<TMessage>();
         ICloudQueueServerBusConfigurationBuilder Accept(Type message);

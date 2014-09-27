@@ -10,9 +10,10 @@
     <licenseUrl>https://raw.github.com/yreynhout/CloudQueueBus/master/LICENSE.txt</licenseUrl>
     <description>CloudQueueBus provides lightweight infrastructure for sending and receiving messages with Azure Storage Queues.</description>
     <projectUrl>https://github.com/yreynhout/CloudQueueBus</projectUrl>
-    <releaseNotes>Initial release.</releaseNotes>
+    <releaseNotes>Changes:
+- Fixing bug with OverflowBlobContainer not being properly propagated.</releaseNotes>
     <copyright>Copyright 2014, BitTacklr. All rights reserved.</copyright>
-    <tags>eventsourcing DDDesign</tags>
+    <tags>messaging Azure</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.5">
         <dependency id="WindowsAzure.Storage" version="4.3.0" />

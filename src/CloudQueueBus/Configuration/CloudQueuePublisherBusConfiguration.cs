@@ -12,10 +12,12 @@ namespace CloudQueueBus.Configuration
             if (serializer == null) throw new ArgumentNullException("serializer");
             if (subscriptions == null) throw new ArgumentNullException("subscriptions");
             if (senderConfiguration == null) throw new ArgumentNullException("senderConfiguration");
+            if (overflowBlobContainerName == null) throw new ArgumentNullException("overflowBlobContainerName");
             StorageAccount = storageAccount;
             Serializer = serializer;
             Subscriptions = subscriptions;
             SenderConfiguration = senderConfiguration;
+            OverflowBlobContainerName = overflowBlobContainerName;
         }
 
         public CloudStorageAccount StorageAccount { get; private set; }
