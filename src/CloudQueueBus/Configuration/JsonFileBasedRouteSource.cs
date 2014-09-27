@@ -40,7 +40,7 @@ namespace CloudQueueBus.Configuration
                         {
                             yield return new Route(
                                 Type.GetType(data.Message, true, true),
-                                data.Address);
+                                data.Queue);
                         }
                     }
                 }
@@ -58,7 +58,7 @@ namespace CloudQueueBus.Configuration
             // ReSharper restore UnusedAutoPropertyAccessor.Local
             [JsonProperty]
             // ReSharper disable UnusedAutoPropertyAccessor.Local
-            public string Address { get; set; }
+            public string Queue { get; set; }
             // ReSharper restore UnusedAutoPropertyAccessor.Local
         }
     }

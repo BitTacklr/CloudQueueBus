@@ -11,7 +11,7 @@
     <description>CloudQueueBus provides lightweight infrastructure for sending and receiving messages with Azure Storage Queues.</description>
     <projectUrl>https://github.com/yreynhout/CloudQueueBus</projectUrl>
     <releaseNotes>Changes:
-- Fixing bug with OverflowBlobContainer not being properly propagated.</releaseNotes>
+- Fixing naming convention in json based subscription/route sources.</releaseNotes>
     <copyright>Copyright 2014, BitTacklr. All rights reserved.</copyright>
     <tags>messaging Azure</tags>
     <dependencies>
