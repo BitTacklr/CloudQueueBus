@@ -9,7 +9,7 @@ namespace CloudQueueBus.Configuration
     {
         ICloudQueueServerBusConfigurationBuilder ReceiveFrom(string queueName, Action<ICloudQueueReceiverConfigurationBuilder> configure);
         ICloudQueueServerBusConfigurationBuilder ErrorTo(string queueName, Action<ICloudQueueErrorConfigurationBuilder> configure);
-        ICloudQueueServerBusConfigurationBuilder ObserveOn(IObserver<IReceiveContext> observer);
+        ICloudQueueServerBusConfigurationBuilder HandleUsing(IAsyncHandler<IAsyncReceiveContext> handler);
         ICloudQueueServerBusConfigurationBuilder Accept<TMessage>();
         ICloudQueueServerBusConfigurationBuilder Accept(Type message);
         ICloudQueueServerBusConfigurationBuilder AcceptAll(IEnumerable<Type> messages);

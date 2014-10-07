@@ -1,17 +1,19 @@
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
 namespace CloudQueueBus
 {
-    public class CloudQueueMessageEnvelopeSender : ICloudQueueMessageEnvelopeSender 
+    public class AsyncCloudQueueMessageEnvelopeSender : IAsyncCloudQueueMessageEnvelopeSender
     {
-        private readonly ICloudQueueSender _sender;
+        private readonly IAsyncCloudQueueSender _sender;
         private readonly ICloudQueueMessageEnvelopeJsonWriter _queueWriter;
         private readonly ICloudBlobMessageEnvelopeWriter _blobWriter;
 
-        public CloudQueueMessageEnvelopeSender(ICloudQueueSender sender, ICloudQueueMessageEnvelopeJsonWriter queueWriter, ICloudBlobMessageEnvelopeWriter blobWriter)
+        public AsyncCloudQueueMessageEnvelopeSender(IAsyncCloudQueueSender sender, ICloudQueueMessageEnvelopeJsonWriter queueWriter, ICloudBlobMessageEnvelopeWriter blobWriter)
         {
             if (sender == null) throw new ArgumentNullException("sender");
             if (queueWriter == null) throw new ArgumentNullException("queueWriter");
@@ -21,7 +23,7 @@ namespace CloudQueueBus
             _blobWriter = blobWriter;
         }
 
-        public ICloudQueueSender Sender
+        public IAsyncCloudQueueSender Sender
         {
             get { return _sender; }
         }
@@ -36,7 +38,12 @@ namespace CloudQueueBus
             get { return _blobWriter; }
         }
 
-        public void Send(IConfigureCloudQueueMessageEnvelope envelope)
+        public Task SendAsync(IConfigureCloudQueueMessageEnvelope envelope)
+        {
+            return SendAsync(envelope, CancellationToken.None);
+        }
+
+        public Task SendAsync(IConfigureCloudQueueMessageEnvelope envelope, CancellationToken cancellationToken)
         {
             if (envelope == null) throw new ArgumentNullException("envelope");
 
@@ -52,7 +59,7 @@ namespace CloudQueueBus
 
                 content = WriteEnvelopeToContent(envelope);
             }
-            Sender.Send(envelope.To, new CloudQueueMessage(content));
+            return Sender.SendAsync(envelope.To, new CloudQueueMessage(content), cancellationToken);
         }
 
         private byte[] WriteEnvelopeToContent(IConfigureCloudQueueMessageEnvelope envelope)

@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using CloudQueueBus.Configuration;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -61,6 +63,33 @@ namespace CloudQueueBus
             var overflowContainer =
                 BlobClient.GetContainerReference(Configuration.OverflowBlobContainerName);
             overflowContainer.CreateIfNotExists();
+        }
+
+        public Task InitializeAsync()
+        {
+            return InitializeAsync(CancellationToken.None);
+        }
+
+        public async Task InitializeAsync(CancellationToken cancellationToken)
+        {
+            var receiveQueue =
+                QueueClient.GetQueueReference(Configuration.ReceiverConfiguration.ReceiveQueue);
+            await receiveQueue.CreateIfNotExistsAsync(cancellationToken);
+            var errorQueue =
+                QueueClient.GetQueueReference(Configuration.ErrorConfiguration.ErrorQueue);
+            await errorQueue.CreateIfNotExistsAsync(cancellationToken);
+            foreach (var sendQueue in
+                Configuration.Routes.
+                    Select(_ => _.QueueName).
+                    Distinct().
+                    Select(address =>
+                        QueueClient.GetQueueReference(address)))
+            {
+                await sendQueue.CreateIfNotExistsAsync(cancellationToken);
+            }
+            var overflowContainer =
+                BlobClient.GetContainerReference(Configuration.OverflowBlobContainerName);
+            await overflowContainer.CreateIfNotExistsAsync(cancellationToken);
         }
 
         public void Start()

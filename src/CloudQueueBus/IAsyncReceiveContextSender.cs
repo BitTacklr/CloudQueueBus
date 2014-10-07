@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 
 namespace CloudQueueBus
 {
-    public interface ICloudQueueSendOnlyBus
+    public interface IAsyncReceiveContextSender
     {
-        void Send(Guid id, object message);
-
         Task SendAsync(Guid id, object message);
         Task SendAsync(Guid id, object message, CancellationToken cancellationToken);
     }

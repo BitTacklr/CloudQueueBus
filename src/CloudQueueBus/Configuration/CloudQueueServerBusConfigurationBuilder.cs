@@ -13,7 +13,7 @@ namespace CloudQueueBus.Configuration
         private JsonSerializer _serializer;
         private CloudStorageAccount _storageAccount;
         private readonly HashSet<Route> _routes;
-        private IObserver<IReceiveContext> _observer;
+        private IAsyncHandler<IAsyncReceiveContext> _handler;
         private readonly HashSet<Type> _messages;
         private string _overflowBlobContainerName;
 
@@ -43,10 +43,10 @@ namespace CloudQueueBus.Configuration
             return this;
         }
 
-        public ICloudQueueServerBusConfigurationBuilder ObserveOn(IObserver<IReceiveContext> observer)
+        public ICloudQueueServerBusConfigurationBuilder HandleUsing(IAsyncHandler<IAsyncReceiveContext> handler)
         {
-            if (observer == null) throw new ArgumentNullException("observer");
-            _observer = observer;
+            if (handler == null) throw new ArgumentNullException("handler");
+            _handler = handler;
             return this;
         }
 
@@ -123,7 +123,7 @@ namespace CloudQueueBus.Configuration
             return new CloudQueueServerBusConfiguration(
                 _storageAccount,
                 _serializer,
-                _observer,
+                _handler,
                 _receiverConfiguration,
                 _messages.ToArray(),
                 new CloudQueueSenderConfiguration

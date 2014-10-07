@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using CloudQueueBus.Configuration;
@@ -7,27 +7,27 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace CloudQueueBus
 {
-    public class CloudQueueReceiver : ICloudQueueReceiver
+    public class AsyncCloudQueueReceiver : ICloudQueueReceiver
     {
         private readonly ICloudQueuePool _pool;
-        private readonly IObserver<CloudQueueMessage> _observer;
+        private readonly IAsyncHandler<CloudQueueMessage> _handler;
         private readonly ICloudQueueReceiverConfiguration _receiverConfiguration;
         private readonly ICloudQueueErrorConfiguration _errorConfiguration;
         private readonly CancellationTokenSource _stopSource;
         private Task _task;
 
-        public CloudQueueReceiver(
-            ICloudQueuePool pool, 
-            IObserver<CloudQueueMessage> observer,
+        public AsyncCloudQueueReceiver(
+            ICloudQueuePool pool,
+            IAsyncHandler<CloudQueueMessage> handler,
             ICloudQueueReceiverConfiguration receiverConfiguration,
             ICloudQueueErrorConfiguration errorConfiguration)
         {
             if (pool == null) throw new ArgumentNullException("pool");
-            if (observer == null) throw new ArgumentNullException("observer");
+            if (handler == null) throw new ArgumentNullException("handler");
             if (receiverConfiguration == null) throw new ArgumentNullException("receiverConfiguration");
             if (errorConfiguration == null) throw new ArgumentNullException("errorConfiguration");
             _pool = pool;
-            _observer = observer;
+            _handler = handler;
             _receiverConfiguration = receiverConfiguration;
             _errorConfiguration = errorConfiguration;
             _stopSource = new CancellationTokenSource();
@@ -43,9 +43,9 @@ namespace CloudQueueBus
             get { return _pool; }
         }
 
-        public IObserver<CloudQueueMessage> Observer
+        public IAsyncHandler<CloudQueueMessage> Handler
         {
-            get { return _observer; }
+            get { return _handler; }
         }
 
         public ICloudQueueErrorConfiguration ErrorConfiguration
@@ -78,13 +78,23 @@ namespace CloudQueueBus
                         {
                             if (message.DequeueCount > ErrorConfiguration.DequeueCountThreshold)
                             {
-                                await errorQueue.AddMessageAsync(message, ErrorConfiguration.TimeToLive, ErrorConfiguration.InitialVisibilityDelay, ErrorConfiguration.QueueRequestOptions, null, _stopSource.Token);
+                                await errorQueue.AddMessageAsync(
+                                    message,
+                                    ErrorConfiguration.TimeToLive,
+                                    ErrorConfiguration.InitialVisibilityDelay,
+                                    ErrorConfiguration.QueueRequestOptions.Clone(),
+                                    null,
+                                    _stopSource.Token);
                             }
                             else
                             {
-                                Observer.OnNext(message);
+                                await Handler.HandleAsync(message, _stopSource.Token);
                             }
-                            await receiveQueue.DeleteMessageAsync(message, ReceiverConfiguration.QueueRequestOptions, null, _stopSource.Token);
+                            await receiveQueue.DeleteMessageAsync(
+                                message,
+                                ReceiverConfiguration.QueueRequestOptions.Clone(),
+                                null,
+                                _stopSource.Token);
                         }
                         else
                         {
@@ -93,14 +103,21 @@ namespace CloudQueueBus
                     }
                     catch (StorageException exception)
                     {
-                        Observer.OnError(exception);
+                        //TODO: Log
+                    }
+                    catch (TaskCanceledException exception)
+                    {
+                        //TODO: Log
+                    }
+                    catch (AggregateException exception)
+                    {
+                        //TODO: Log
                     }
                     catch (Exception exception)
                     {
-                       Observer.OnError(exception);
+                        //TODO: Log
                     }
                 }
-                Observer.OnCompleted();
             }
             finally
             {

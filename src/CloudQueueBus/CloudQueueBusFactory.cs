@@ -20,9 +20,20 @@ namespace CloudQueueBus
                     new CloudQueueSender(queuePool, configuration.SenderConfiguration),
                     new CloudQueueMessageEnvelopeJsonWriter(),
                     new CloudBlobMessageEnvelopeWriter(blobContainerPool, configuration.OverflowBlobContainerName)),
-                new MessageTypeResolver(), 
+                new MessageTypeResolver(),
                 configuration.Serializer);
-            return new CloudQueuePublisherBus(configuration, sender);
+            var asyncSender = new AsyncSendContextSender(
+                new AsyncCloudQueueMessageEnvelopeSender(
+                    new AsyncCloudQueueSender(
+                        queuePool,
+                        configuration.SenderConfiguration),
+                    new CloudQueueMessageEnvelopeJsonWriter(),
+                    new CloudBlobMessageEnvelopeWriter(
+                        blobContainerPool,
+                        configuration.OverflowBlobContainerName)),
+                new MessageTypeResolver(),
+                configuration.Serializer);
+            return new CloudQueuePublisherBus(configuration, sender, asyncSender);
         }
 
         public static CloudQueueServerBus NewServerBus(Action<ICloudQueueServerBusConfigurationBuilder> configure)
@@ -45,17 +56,30 @@ namespace CloudQueueBus
                         blobContainerPool, configuration.OverflowBlobContainerName)),
                 new MessageTypeResolver(),
                 configuration.Serializer);
-            var receiver = new CloudQueueReceiver(
+            var asyncSender = new AsyncSendContextSender(
+                new AsyncCloudQueueMessageEnvelopeSender(
+                    new AsyncCloudQueueSender(
+                        queuePool,
+                        configuration.SenderConfiguration),
+                    new CloudQueueMessageEnvelopeJsonWriter(),
+                    new CloudBlobMessageEnvelopeWriter(
+                        blobContainerPool, 
+                        configuration.OverflowBlobContainerName)),
+                new MessageTypeResolver(),
+                configuration.Serializer);
+            
+            var receiver = new AsyncCloudQueueReceiver(
                 queuePool,
-                new CloudQueueMessageObserver(
+                new AsyncCloudQueueMessageHandler(
                     new CloudQueueMessageEnvelopeJsonReader(),
                     new CloudBlobMessageEnvelopeReader(blobContainerPool, configuration.OverflowBlobContainerName), 
-                    new CloudQueueMessageEnvelopeObserver(
+                    new AsyncCloudQueueMessageEnvelopeHandler(
                         new MessageContentTypeResolver(configuration.Messages),
                         configuration.Serializer,
-                        new CloudQueueReceiveContextObserver(
-                            sender,
-                            configuration.Observer, 
+                        new AsyncCloudQueueReceiveContextHandler(
+                            sender, 
+                            asyncSender,
+                            configuration.Handler, 
                             configuration.Routes))),
                 configuration.ReceiverConfiguration,
                 configuration.ErrorConfiguration);
@@ -79,7 +103,17 @@ namespace CloudQueueBus
                     new CloudBlobMessageEnvelopeWriter(blobContainerPool, configuration.OverflowBlobContainerName)),
                 new MessageTypeResolver(),
                 configuration.Serializer);
-            return new CloudQueueSendOnlyBus(configuration, sender);
+            var asyncSender = new AsyncSendContextSender(
+                new AsyncCloudQueueMessageEnvelopeSender(
+                    new AsyncCloudQueueSender(
+                        queuePool,
+                        configuration.SenderConfiguration),
+                    new CloudQueueMessageEnvelopeJsonWriter(),
+                    new CloudBlobMessageEnvelopeWriter(
+                        blobContainerPool, configuration.OverflowBlobContainerName)),
+                new MessageTypeResolver(),
+                configuration.Serializer);
+            return new CloudQueueSendOnlyBus(configuration, sender, asyncSender);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace CloudQueueBus.Configuration
         CloudStorageAccount StorageAccount { get; }
         JsonSerializer Serializer { get; }
 
-        IObserver<IReceiveContext> Observer { get; }
+        IAsyncHandler<IAsyncReceiveContext> Handler { get; }
 
         ICloudQueueReceiverConfiguration ReceiverConfiguration { get; }
         Type[] Messages { get; }

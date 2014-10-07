@@ -6,11 +6,11 @@ namespace CloudQueueBus.Configuration
 {
     public class CloudQueueServerBusConfiguration : ICloudQueueServerBusConfiguration
     {
-        public CloudQueueServerBusConfiguration(CloudStorageAccount storageAccount, JsonSerializer serializer, IObserver<IReceiveContext> observer, ICloudQueueReceiverConfiguration receiverConfiguration, Type[] messages, ICloudQueueSenderConfiguration senderConfiguration, Route[] routes, ICloudQueueErrorConfiguration errorConfiguration, string overflowBlobContainerName)
+        public CloudQueueServerBusConfiguration(CloudStorageAccount storageAccount, JsonSerializer serializer, IAsyncHandler<IAsyncReceiveContext> handler, ICloudQueueReceiverConfiguration receiverConfiguration, Type[] messages, ICloudQueueSenderConfiguration senderConfiguration, Route[] routes, ICloudQueueErrorConfiguration errorConfiguration, string overflowBlobContainerName)
         {
             if (storageAccount == null) throw new ArgumentNullException("storageAccount");
             if (serializer == null) throw new ArgumentNullException("serializer");
-            if (observer == null) throw new ArgumentNullException("observer");
+            if (handler == null) throw new ArgumentNullException("handler");
             if (receiverConfiguration == null) throw new ArgumentNullException("receiverConfiguration");
             if (messages == null) throw new ArgumentNullException("messages");
             if (senderConfiguration == null) throw new ArgumentNullException("senderConfiguration");
@@ -19,7 +19,7 @@ namespace CloudQueueBus.Configuration
             if (overflowBlobContainerName == null) throw new ArgumentNullException("overflowBlobContainerName");
             StorageAccount = storageAccount;
             Serializer = serializer;
-            Observer = observer;
+            Handler = handler;
             ReceiverConfiguration = receiverConfiguration;
             Messages = messages;
             SenderConfiguration = senderConfiguration;
@@ -30,7 +30,7 @@ namespace CloudQueueBus.Configuration
 
         public CloudStorageAccount StorageAccount { get; private set; }
         public JsonSerializer Serializer { get; private set; }
-        public IObserver<IReceiveContext> Observer { get; private set; }
+        public IAsyncHandler<IAsyncReceiveContext> Handler { get; private set; }
         public ICloudQueueReceiverConfiguration ReceiverConfiguration { get; private set; }
         public Type[] Messages { get; private set; }
         public string OverflowBlobContainerName { get; private set; }

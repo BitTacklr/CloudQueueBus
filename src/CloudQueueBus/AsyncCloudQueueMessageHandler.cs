@@ -1,29 +1,31 @@
-﻿using System;
+using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
 namespace CloudQueueBus
 {
-    public class CloudQueueMessageObserver : IObserver<CloudQueueMessage>
+    public class AsyncCloudQueueMessageHandler : IAsyncHandler<CloudQueueMessage>
     {
         private readonly ICloudQueueMessageEnvelopeJsonReader _queueReader;
         private readonly ICloudBlobMessageEnvelopeReader _blobReader;
-        private readonly IObserver<ICloudQueueMessageEnvelope> _observer;
+        private readonly IAsyncHandler<ICloudQueueMessageEnvelope> _next;
 
-        public CloudQueueMessageObserver(ICloudQueueMessageEnvelopeJsonReader queueReader, ICloudBlobMessageEnvelopeReader blobReader, IObserver<ICloudQueueMessageEnvelope> observer)
+        public AsyncCloudQueueMessageHandler(ICloudQueueMessageEnvelopeJsonReader queueReader, ICloudBlobMessageEnvelopeReader blobReader, IAsyncHandler<ICloudQueueMessageEnvelope> next)
         {
             if (queueReader == null) throw new ArgumentNullException("queueReader");
             if (blobReader == null) throw new ArgumentNullException("blobReader");
-            if (observer == null) throw new ArgumentNullException("observer");
+            if (next == null) throw new ArgumentNullException("next");
             _queueReader = queueReader;
             _blobReader = blobReader;
-            _observer = observer;
+            _next = next;
         }
 
-        public IObserver<ICloudQueueMessageEnvelope> Observer
+        public IAsyncHandler<ICloudQueueMessageEnvelope> Next
         {
-            get { return _observer; }
+            get { return _next; }
         }
 
         public ICloudQueueMessageEnvelopeJsonReader QueueReader
@@ -36,8 +38,14 @@ namespace CloudQueueBus
             get { return _blobReader; }
         }
 
-        public void OnNext(CloudQueueMessage value)
+        public Task HandleAsync(CloudQueueMessage value)
         {
+            return HandleAsync(value, CancellationToken.None);
+        }
+
+        public Task HandleAsync(CloudQueueMessage value, CancellationToken cancellationToken)
+        {
+            if (value == null) throw new ArgumentNullException("message");
             var envelope = ReadEnvelopeFromContent(value);
             if (envelope.ContentType == ContentTypes.BlobReference)
             {
@@ -48,7 +56,7 @@ namespace CloudQueueBus
                     SetContentType(blobEnvelope.ContentType).
                     SetContent(blobEnvelope.Content);
             }
-            Observer.OnNext(envelope);
+            return Next.HandleAsync(envelope, cancellationToken);
         }
 
         private IConfigureCloudQueueMessageEnvelope ReadEnvelopeFromContent(CloudQueueMessage value)
@@ -63,16 +71,6 @@ namespace CloudQueueBus
                     }
                 }
             }
-        }
-
-        public void OnError(Exception error)
-        {
-            Observer.OnError(error);
-        }
-
-        public void OnCompleted()
-        {
-            Observer.OnCompleted();
         }
     }
 }

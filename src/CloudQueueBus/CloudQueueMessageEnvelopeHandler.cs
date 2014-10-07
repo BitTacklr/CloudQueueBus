@@ -1,26 +1,26 @@
-﻿using System;
+using System;
 using System.IO;
 using Newtonsoft.Json;
 
 namespace CloudQueueBus
 {
-    public class CloudQueueMessageEnvelopeObserver : IObserver<ICloudQueueMessageEnvelope>
+    public class CloudQueueMessageEnvelopeHandler : IHandler<ICloudQueueMessageEnvelope>
     {
         private readonly IMessageContentTypeResolver _resolver;
         private readonly JsonSerializer _serializer;
-        private readonly IObserver<IConfigureReceiveContext> _observer;
+        private readonly IHandler<IConfigureReceiveContext> _next;
 
-        public CloudQueueMessageEnvelopeObserver(
-            IMessageContentTypeResolver resolver, 
+        public CloudQueueMessageEnvelopeHandler(
+            IMessageContentTypeResolver resolver,
             JsonSerializer serializer,
-            IObserver<IConfigureReceiveContext> observer)
+            IHandler<IConfigureReceiveContext> next)
         {
             if (resolver == null) throw new ArgumentNullException("resolver");
             if (serializer == null) throw new ArgumentNullException("serializer");
-            if (observer == null) throw new ArgumentNullException("observer");
+            if (next == null) throw new ArgumentNullException("next");
             _resolver = resolver;
             _serializer = serializer;
-            _observer = observer;
+            _next = next;
         }
 
         public JsonSerializer Serializer
@@ -28,9 +28,9 @@ namespace CloudQueueBus
             get { return _serializer; }
         }
 
-        public IObserver<IConfigureReceiveContext> Observer
+        public IHandler<IConfigureReceiveContext> Next
         {
-            get { return _observer; }
+            get { return _next; }
         }
 
         public IMessageContentTypeResolver Resolver
@@ -38,18 +38,19 @@ namespace CloudQueueBus
             get { return _resolver; }
         }
 
-        public void OnNext(ICloudQueueMessageEnvelope value)
+        public void Handle(ICloudQueueMessageEnvelope value)
         {
-            var context = 
+            if (value == null) throw new ArgumentNullException("value");
+            var context =
                 new ReceiveContext().
-                SetFrom(value.From).
-                SetTo(value.To).
-                SetMessageId(value.MessageId).
-                SetRelatesToMessageId(value.RelatesToMessageId).
-                SetCorrelationId(value.CorrelationId).
-                SetMessage(DeserializeMessage(value));
+                    SetFrom(value.From).
+                    SetTo(value.To).
+                    SetMessageId(value.MessageId).
+                    SetRelatesToMessageId(value.RelatesToMessageId).
+                    SetCorrelationId(value.CorrelationId).
+                    SetMessage(DeserializeMessage(value));
 
-            Observer.OnNext(context);
+            Next.Handle(context);
         }
 
         private object DeserializeMessage(ICloudQueueMessageEnvelope envelope)
@@ -65,16 +66,6 @@ namespace CloudQueueBus
                     }
                 }
             }
-        }
-
-        public void OnError(Exception error)
-        {
-            Observer.OnError(error);
-        }
-
-        public void OnCompleted()
-        {
-            Observer.OnCompleted();
         }
     }
 }
