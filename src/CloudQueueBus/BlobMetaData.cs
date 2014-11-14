@@ -4,7 +4,7 @@ namespace CloudQueueBus
     {
         public const string MessageId = "MessageId";
         public const string Time = "Time";
-        public const string ContentLength = "Content-Length";
-        public const string ContentType = "Content-Type";
+        public const string ContentLength = "ContentLength";
+        public const string ContentType = "ContentType";
     }
 }

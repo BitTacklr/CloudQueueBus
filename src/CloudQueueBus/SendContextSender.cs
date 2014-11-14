@@ -47,7 +47,8 @@ namespace CloudQueueBus
                 SetRelatesToMessageId(context.RelatesToMessageId).
                 SetCorrelationId(context.CorrelationId).
                 SetContentType(Resolver.GetContentType(context.Message)).
-                SetContent(SerializeMessage(context));
+                SetContent(SerializeMessage(context)).
+                SetTime(DateTimeOffset.UtcNow);
 
             InnerSender.Send(envelope);
         }

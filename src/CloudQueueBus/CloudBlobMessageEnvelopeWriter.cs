@@ -28,7 +28,10 @@ namespace CloudQueueBus
             var container = Pool.Take(_overflowBlobContainerName);
             try
             {
-                var reference = container.GetBlobReferenceFromServer(envelope.BlobId.ToString("N"));
+                var reference = container.GetBlockBlobReference(envelope.BlobId.ToString("N"));
+                reference.UploadFromByteArray(envelope.Content, 0, envelope.Content.Length);
+                reference.Metadata[BlobMetaData.MessageId] =
+                    envelope.MessageId.ToString("N");
                 reference.Metadata[BlobMetaData.ContentType] = 
                     envelope.ContentType;
                 reference.Metadata[BlobMetaData.ContentLength] =
@@ -36,7 +39,6 @@ namespace CloudQueueBus
                 reference.Metadata[BlobMetaData.Time] = 
                     XmlConvert.ToString(envelope.Time);
                 reference.SetMetadata();
-                reference.UploadFromByteArray(envelope.Content, 0, envelope.Content.Length);
             }
             finally
             {
