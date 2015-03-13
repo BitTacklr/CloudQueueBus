@@ -91,6 +91,7 @@ namespace CloudQueueBus
                             await Task.Delay(ReceiverConfiguration.DelayBetweenIdleReceives, _stopSource.Token);
                         }
                     }
+                    catch (OperationCanceledException) { }
                     catch (StorageException exception)
                     {
                         Observer.OnError(exception);
